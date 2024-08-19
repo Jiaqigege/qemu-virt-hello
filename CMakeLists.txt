@@ -26,13 +26,15 @@ add_compile_options(
     -nostdinc
     -march=armv8-a+nofp
 )
+
+# 编译汇编文件时，自动定义 __ASM__ 宏
 add_compile_definitions($<$<COMPILE_LANGUAGE:ASM>:__ASM__>)
 add_link_options(-T ${CMAKE_CURRENT_LIST_DIR}/kernel.ld)
 
 include_directories(kernel)
 
-set(KERNEL_IMG kernel.img)
-set(KERNEL_BIN kernel.bin)
+set(KERNEL_IMG kernel.img) # 标准的可执行文件格式
+set(KERNEL_BIN kernel.bin) # 提取出 kernel.img 的纯机器代码和数据，不含 ELF 头部、符号表或调试信息，适合嵌入式系统直接加载执行
 set(KERNEL_ASM kernel.asm)
 
 set(KERNEL_SOURCES
