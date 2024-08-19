@@ -5,11 +5,15 @@
 #define UARTDR                 0x000
 #define UARTFR                 0x018
 #define UARTFR_TXFF            (1 << 5)
-#define PL011_UART0_BASE       0x9000000
+#define PL011_UART0_BASE       0x9000000 // 通过设备树获取
 #define PL011_REG_SIZE         0x1000
+
+// 寄存器参考源码：https://github.com/qemu/qemu/blob/master/hw/char/pl011.c pl011_regname
+// 或者手册：https://developer.arm.com/documentation/ddi0183/g/programmers-model/summary-of-registers?lang=en
 
 #define UART_DR      0x00 /* data register */
 #define UART_RSR_ECR 0x04 /* receive status or error clear */
+// 下面两个寄存器手册未注明，QEMU源码未写
 #define UART_DMAWM   0x08 /* DMA watermark configure */
 #define UART_TIMEOUT 0x0C /* Timeout period */
 /* reserved space */
