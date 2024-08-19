@@ -62,14 +62,20 @@
 .endm
 
 BEGIN_FUNC(arm64_elX_to_el1)
+	// https://developer.arm.com/documentation/ddi0601/2024-06/AArch64-Registers/CurrentEL--Current-Exception-Level?lang=en
+	// EL, bits [3:2] Current Exception Level.
+	// 0b00 EL0 User Mode            最低的执行级别，通常用于运行用户空间的应用程序。
+	// 0b01 EL1 Kernel Mode          用于操作系统内核的执行级别，具有更高的权限
+	// 0b10 EL2 Hypervisor Mode      用于虚拟化场景，比如运行虚拟机管理程序（Hypervisor）
+	// 0b11 EL3 Secure Monitor Mode  最高的执行级别，通常用于运行安全监控程序（Secure Monitor）
     mrs     x9, CurrentEL
 
     // Check the current exception level.
     cmp     x9, CURRENTEL_EL1
-    beq     .Ltarget
+    beq     .Ltarget	// EL1 跳转
     cmp     x9, CURRENTEL_EL2
-    beq     .Lin_el2
-    // Otherwise, we are in EL3.
+    beq     .Lin_el2	// EL2 跳转
+    // Otherwise, we are in EL3. // 其他的认为是EL3
 
     // Set EL2 to 64bit and enable the HVC instruction.
     mrs     x9, scr_el3
