@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CROSS_COMPILE "aarch64-linux-gnu-")
 set(CMAKE_LINKER "${CROSS_COMPILE}ld")
 set(CMAKE_C_LINK_EXECUTABLE
