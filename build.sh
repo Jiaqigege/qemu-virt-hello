@@ -3,7 +3,7 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-main() {
+build() {
 	rm -rf build && mkdir build
 
 	echo "compiling kernel image..."
@@ -15,4 +15,4 @@ main() {
 	exit 0
 }
 
-main $@
+build $@
