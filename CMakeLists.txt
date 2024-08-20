@@ -30,7 +30,7 @@ add_compile_options(
 
 # 编译汇编文件时，自动定义 __ASM__ 宏
 add_compile_definitions($<$<COMPILE_LANGUAGE:ASM>:__ASM__>)
-add_link_options(-T ${CMAKE_CURRENT_LIST_DIR}/kernel.ld)
+add_link_options(-T ${CMAKE_CURRENT_LIST_DIR}/kernel/kernel.lds)
 
 include_directories(kernel)
 
