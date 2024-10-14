@@ -19,20 +19,16 @@ void uart_putc(char ch)
 
 void uart_init(void)
 {
-	volatile unsigned int *base_rsr_ecr =
-		(unsigned int *)(PL011_UART0_BASE + UART_RSR_ECR);
-	volatile unsigned int *base_cr =
-		(unsigned int *)(PL011_UART0_BASE + UART_CR);
-	volatile unsigned int *base_lcr_h =
-		(unsigned int *)(PL011_UART0_BASE + UART_LCR_H);
-
-	//Init the uart
 	/* Clear all errors */
-	*base_rsr_ecr = 0;
+	put32(PL011_UART0_BASE + UART_RSR_ECR, 0);
+
 	/* Disable everything */
-	*base_cr = 0;
+	put32(PL011_UART0_BASE + UART_CR, 0);
+
 	/* Configure TX to 8 bits, 1 stop bit, no parity, fifo disabled. */
-	*base_lcr_h = UART_LCRH_WLEN_8;
+	put32(PL011_UART0_BASE + UART_LCR_H, UART_LCRH_WLEN_8);
+
 	/* Enable UART and RX/TX */
-	*base_cr = UART_CR_UARTEN | UART_CR_TXE | UART_CR_RXE;
+	put32(PL011_UART0_BASE + UART_CR,
+	      UART_CR_UARTEN | UART_CR_TXE | UART_CR_RXE);
 }
