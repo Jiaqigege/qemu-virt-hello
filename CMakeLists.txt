@@ -11,7 +11,7 @@ set(CMAKE_C_COMPILER "${CROSS_COMPILE}gcc")
 set(CMAKE_ASM_COMPILER "${CROSS_COMPILE}gcc")
 set(CMAKE_OBJCOPY "${CROSS_COMPILE}objcopy")
 set(CMAKE_OBJDUMP "${CROSS_COMPILE}objdump")
-set(UBOOT_IMAGE_TOOLS "mkimage")
+set(UBOOT_IMAGE_TOOLS "mkimage") # need install u-boot-tools
 
 project(gic-vm-test C ASM)
 

@@ -11,3 +11,5 @@ cmake-build-*
 
 .cache
 virt.dts
+
+.iaqenv
