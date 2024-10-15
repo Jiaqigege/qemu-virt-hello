@@ -9,6 +9,7 @@ static u32 gicv2_get_cpumask()
 {
 	u32 mask, i;
 	for (i = mask = 0; i < 32; i += 4) {
+		// 一个核的时候全部指向cpu0，大于1个核的时候全部指向cpu1
 		mask = get32(GICD_ITARGETSRn + i);
 		mask |= mask >> 16;
 		mask |= mask >> 8;
@@ -21,27 +22,24 @@ static u32 gicv2_get_cpumask()
 static void gicv2_dist_init()
 {
 	u32 cpumask;
-	u32 type;
-	u32 nr_lines;
+	u32 type, nr_lines, nr_cpus;
 	int i;
 
 	/* Disable the distributor */
 	put32(GICD_CTLR, GICD_CTL_DISABLE);
-
 	printf("GICD_IGROUPRn: %x\n", get32(GICD_IGROUPRn));
 
+	/* Print GIC information */
 	type = get32(GICD_TYPER);
-	nr_lines = get32(GICD_TYPER) & GICD_TYPE_LINES;
-	nr_lines = (nr_lines + 1) * 32;
-
-	printf("GICv2: %d irq(s), %d cpu(s)\n", nr_lines,
-	       1 + ((type & GICD_TYPE_CPUS) >> 5));
+	nr_lines = ((type & GICD_TYPE_LINE_NR) + 1) * 32;
+	nr_cpus = 1 + ((type & GICD_TYPE_CPU_NR) >> GICD_TYPE_CPU_NR_SHIFT);
+	printf("GICv2: %d irq(s), %d cpu(s)\n", nr_lines, nr_cpus);
 
 	/* Set all global interrupts to this CPU only */
 	cpumask = gicv2_get_cpumask();
 	cpumask |= cpumask << 8;
 	cpumask |= cpumask << 16;
-	printf("cpumask: %u\n", cpumask);
+	printf("cpumask: %u 0x%x\n", cpumask, cpumask);
 	printf("Set GICD_ITARGETSRn\n");
 	for (i = 32; i < nr_lines; i += 4) {
 		put32(GICD_ITARGETSRn + i * 4 / 4, cpumask);

@@ -93,10 +93,10 @@
 	 (GICD_INT_DEF_PRI << 8) | GICD_INT_DEF_PRI)
 
 /* Register bits */
-#define GICD_TYPE_LINES      0x01F
-#define GICD_TYPE_CPUS_SHIFT 5
-#define GICD_TYPE_CPUS       0x0E0
-#define GICD_TYPE_SEC        0x400
+#define GICD_TYPE_LINE_NR      0x01F
+#define GICD_TYPE_CPU_NR_SHIFT 5
+#define GICD_TYPE_CPU_NR       0x0E0
+#define GICD_TYPE_SEC          0x400
 
 #define GICC_ENABLE            0x1
 #define GICC_INT_PRI_THRESHOLD 0xf0

@@ -29,7 +29,7 @@ build() {
 }
 
 run() {
-    ${QEMU_PATH}qemu-system-aarch64 -machine virt -cpu cortex-a57 -smp 1 -m 2G -kernel build/kernel.img -nographic
+    ${QEMU_PATH}qemu-system-aarch64 -machine virt -cpu cortex-a57 -smp 2 -m 2G -kernel build/kernel.img -nographic
 }
 
 clean() {
