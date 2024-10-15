@@ -8,36 +8,79 @@
 #define GICC_BASE (GIC_BASE + 0x10000)
 
 /* GICD Registers */
-#define GICD_CTLR         (GICD_BASE + 0x000)
-#define GICD_TYPER        (GICD_BASE + 0x004)
-#define GICD_IIDR         (GICD_BASE + 0x008)
-#define GICD_IGROUPR      (GICD_BASE + 0x080)
-#define GICD_ISENABLER    (GICD_BASE + 0x100)
-#define GICD_ICENABLER    (GICD_BASE + 0x180)
-#define GICD_ISPENDR      (GICD_BASE + 0x200)
-#define GICD_ICPENDR      (GICD_BASE + 0x280)
-#define GICD_ISACTIVER    (GICD_BASE + 0x300)
-#define GICD_ICACTIVER    (GICD_BASE + 0x380)
-#define GICD_IPRIORITYR   (GICD_BASE + 0x400)
-#define GICD_ITARGETSR    (GICD_BASE + 0x800)
-#define GICD_ICFGR        (GICD_BASE + 0xC00)
-#define GICD_PPISR        (GICD_BASE + 0xD00)
-#define GICD_SGIR         (GICD_BASE + 0xF00)
-#define GICD_SGIR_CLRPEND (GICD_BASE + 0xF10)
-#define GICD_SGIR_SETPEND (GICD_BASE + 0xF20)
+
+// Distributor Control Register
+#define GICD_CTLR (GICD_BASE + 0x000)
+// Interrupt Controller Type Register
+#define GICD_TYPER (GICD_BASE + 0x004)
+// Distributor Implementer Identification Register
+#define GICD_IIDR (GICD_BASE + 0x008)
+
+// Interrupt Group Registers
+#define GICD_IGROUPRn (GICD_BASE + 0x080)
+// Interrupt Set-Enable Registers
+#define GICD_ISENABLERn (GICD_BASE + 0x100)
+// Interrupt Clear-Enable Registers
+#define GICD_ICENABLERn (GICD_BASE + 0x180)
+// Interrupt Set-Pending Registers
+#define GICD_ISPENDRn (GICD_BASE + 0x200)
+// Interrupt Clear-Pending Registers
+#define GICD_ICPENDRn (GICD_BASE + 0x280)
+// GICv2 Interrupt Set-Active Registers
+#define GICD_ISACTIVERnd (GICD_BASE + 0x300)
+// Interrupt Clear-Active Registers
+#define GICD_ICACTIVERne (GICD_BASE + 0x380)
+// Interrupt Priority Registers
+#define GICD_IPRIORITYRn (GICD_BASE + 0x400)
+// Interrupt Processor Targets Registers
+#define GICD_ITARGETSRn (GICD_BASE + 0x800)
+// Interrupt Configuration Registers
+#define GICD_ICFGRn (GICD_BASE + 0xC00)
+#define GICD_PPISR  (GICD_BASE + 0xD00) // not found in gicv2 doc
+// Non-secure Access Control Registers, optional
+#define GICD_NSACRne (GICD_BASE + 0xE00)
+// Software Generated Interrupt Register
+#define GICD_SGIR (GICD_BASE + 0xF00)
+// SGI Clear-Pending Registers
+#define GICD_CPENDSGIRne (GICD_BASE + 0xF10)
+// SGI Set-Pending Registers
+#define GICD_SPENDSGIRne (GICD_BASE + 0xF20)
 
 /* GICC Registers */
+// CPU Interface Control Register
 #define GICC_CTLR (GICC_BASE + 0x0000)
-#define GICC_PMR  (GICC_BASE + 0x0004)
-#define GICC_BPR  (GICC_BASE + 0x0008)
-#define GICC_IAR  (GICC_BASE + 0x000C)
+// Interrupt Priority Mask Register
+#define GICC_PMR (GICC_BASE + 00004)
+// Binary Point Register
+#define GICC_BPR (GICC_BASE + 0x0008)
+// Interrupt Acknowledge Register
+#define GICC_IAR (GICC_BASE + 0x000C)
+// End of Interrupt Register
 #define GICC_EOIR (GICC_BASE + 0x0010)
-#define GICC_APR  (GICC_BASE + 0x00D0)
+// Running Priority Register
+#define GICC_RPR (GICC_BASE + 0x0014)
+// Highest Priority Pending Interrupt Register
+#define GICC_HPPIR (GICC_BASE + 0x0018)
+// Aliased Binary Point Register
+#define GICC_ABPRb (GICC_BASE + 0x001C)
+// Aliased Interrupt Acknowledge Register
+#define GICC_AIARc (GICC_BASE + 0x0020)
+// Aliased End of Interrupt Register
+#define GICC_AEOIRc (GICC_BASE + 0x0024)
+// Aliased Highest Priority Pending Interrupt Register
+#define GICC_AHPPIRc (GICC_BASE + 0x0028)
+// Active Priorities Registers
+#define GICC_APRnc (GICC_BASE + 0x00D0)
+// Non-secure Active Priorities Registers
+#define GICC_NSAPRnc (GICC_ABPRb + 0x00E0)
+// CPU Interface Identification Register
 #define GICC_IIDR (GICC_BASE + 0x00FC)
-#define GICC_DIR  (GICC_BASE + 0x1000)
+// Deactivate Interrupt Register
+#define GICC_DIRc (GICC_BASE + 0x1000)
 
-#define GICV_CTLR (GICV_BASE + 0x0)
+#define GICV_CTLR (GICV_BASE + 0x0) // ??
 
+/* register value */
 #define GICD_CTL_ENABLE         0x1
 #define GICD_CTL_DISABLE        0x0
 #define GICD_INT_ACTLOW_LVLTRIG 0x0

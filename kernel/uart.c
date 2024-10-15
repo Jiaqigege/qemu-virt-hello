@@ -1,7 +1,7 @@
 #include "uart.h"
 #include "tools.h"
 
-void uart_send_string(char *str)
+void uart_puts(char *str)
 {
 	for (int i = 0; str[i] != '\0'; i++)
 		uart_putc((char)str[i]);

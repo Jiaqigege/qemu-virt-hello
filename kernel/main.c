@@ -11,7 +11,6 @@ char stack[4096];
 void main()
 {
 	uart_init();
-
 	printf("Booting...\n");
 
 	interrupt_init();

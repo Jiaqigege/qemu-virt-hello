@@ -9,7 +9,7 @@ static u32 gicv2_get_cpumask()
 {
 	u32 mask, i;
 	for (i = mask = 0; i < 32; i += 4) {
-		mask = get32(GICD_ITARGETSR + i);
+		mask = get32(GICD_ITARGETSRn + i);
 		mask |= mask >> 16;
 		mask |= mask >> 8;
 		if (mask)
@@ -28,7 +28,7 @@ static void gicv2_dist_init()
 	/* Disable the distributor */
 	put32(GICD_CTLR, GICD_CTL_DISABLE);
 
-	printf("GICD_IGROUPR: %x\n", get32(GICD_IGROUPR));
+	printf("GICD_IGROUPRn: %x\n", get32(GICD_IGROUPRn));
 
 	type = get32(GICD_TYPER);
 	nr_lines = get32(GICD_TYPER) & GICD_TYPE_LINES;
@@ -42,27 +42,27 @@ static void gicv2_dist_init()
 	cpumask |= cpumask << 8;
 	cpumask |= cpumask << 16;
 	printf("cpumask: %u\n", cpumask);
-	printf("Set GICD_ITARGETSR\n");
+	printf("Set GICD_ITARGETSRn\n");
 	for (i = 32; i < nr_lines; i += 4) {
-		put32(GICD_ITARGETSR + i * 4 / 4, cpumask);
-		printf("[0x%lx] = 0x%x\n", GICD_ITARGETSR + i * 4 / 4,
-		       get32(GICD_ITARGETSR + i * 4 / 4));
+		put32(GICD_ITARGETSRn + i * 4 / 4, cpumask);
+		printf("[0x%lx] = 0x%x\n", GICD_ITARGETSRn + i * 4 / 4,
+		       get32(GICD_ITARGETSRn + i * 4 / 4));
 	}
 
 	/* Set all global interrupts to be level triggered, active low */
-	printf("Set GICD_ICFGR\n");
+	printf("Set GICD_ICFGRn\n");
 	for (i = 32; i < nr_lines; i += 16) {
-		put32(GICD_ICFGR + i / 4, GICD_INT_ACTLOW_LVLTRIG);
-		printf("[0x%lx] = 0x%x\n", GICD_ICFGR + i / 4,
-		       get32(GICD_ICFGR + i / 4));
+		put32(GICD_ICFGRn + i / 4, GICD_INT_ACTLOW_LVLTRIG);
+		printf("[0x%lx] = 0x%x\n", GICD_ICFGRn + i / 4,
+		       get32(GICD_ICFGRn + i / 4));
 	}
 
 	/* Set priority on all global interrupts */
-	printf("Set GICD_IPRIORITYR\n");
+	printf("Set GICD_IPRIORITYRn\n");
 	for (i = 32; i < nr_lines; i += 4) {
-		put32(GICD_IPRIORITYR + i, GICD_INT_DEF_PRI_X4);
-		printf("[0x%lx] = 0x%x\n", GICD_IPRIORITYR + i,
-		       get32(GICD_IPRIORITYR + i));
+		put32(GICD_IPRIORITYRn + i, GICD_INT_DEF_PRI_X4);
+		printf("[0x%lx] = 0x%x\n", GICD_IPRIORITYRn + i,
+		       get32(GICD_IPRIORITYRn + i));
 	}
 
 	/*
@@ -71,8 +71,8 @@ static void gicv2_dist_init()
 	 */
 	printf("Deactivate and disable all SPIs\n");
 	for (i = 32; i < nr_lines; i += 32) {
-		put32(GICD_ICACTIVER + i / 8, GICD_INT_EN_CLR_X32);
-		put32(GICD_ICENABLER + i / 8, GICD_INT_EN_CLR_X32);
+		put32(GICD_ICACTIVERne + i / 8, GICD_INT_EN_CLR_X32);
+		put32(GICD_ICENABLERn + i / 8, GICD_INT_EN_CLR_X32);
 	}
 
 	/* Turn on the distributor */
@@ -91,22 +91,22 @@ static void gicv2_cpu_init()
 	 */
 	printf("Deactivate and disable all PPIs\n");
 	for (i = 0; i < 32; i += 32) {
-		put32(GICD_ICACTIVER + i / 8, GICD_INT_EN_CLR_X32);
-		put32(GICD_ICENABLER + i / 8, GICD_INT_EN_CLR_X32);
+		put32(GICD_ICACTIVERne + i / 8, GICD_INT_EN_CLR_X32);
+		put32(GICD_ICENABLERn + i / 8, GICD_INT_EN_CLR_X32);
 	}
 
 	/* Set priority on PPI and SGI interrupts */
-	printf("Set GICD_IPRIORITYR\n");
+	printf("Set GICD_IPRIORITYRn\n");
 	for (i = 0; i < 32; i += 4) {
-		put32(GICD_IPRIORITYR + i * 4 / 4, GICD_INT_DEF_PRI_X4);
-		printf("[0x%lx] = 0x%x\n", GICD_IPRIORITYR + i * 4 / 4,
-		       get32(GICD_IPRIORITYR + i * 4 / 4));
+		put32(GICD_IPRIORITYRn + i * 4 / 4, GICD_INT_DEF_PRI_X4);
+		printf("[0x%lx] = 0x%x\n", GICD_IPRIORITYRn + i * 4 / 4,
+		       get32(GICD_IPRIORITYRn + i * 4 / 4));
 	}
 
 	/* Ensure all SGI interrupts are now enabled */
 	printf("Enable all SGI\n");
-	put32(GICD_ISENABLER, GICD_INT_EN_SET_SGI);
-	printf("GICD_ISENABLER: 0x%x\n", get32(GICD_ISENABLER));
+	put32(GICD_ISENABLERn, GICD_INT_EN_SET_SGI);
+	printf("GICD_ISENABLERn: 0x%x\n", get32(GICD_ISENABLERn));
 
 	/* Don't mask by priority */
 	put32(GICC_PMR, GICC_INT_PRI_THRESHOLD);
@@ -114,11 +114,11 @@ static void gicv2_cpu_init()
 	/* Finest granularity of priority */
 	put32(GICC_BPR, 0);
 	printf("GICC_BPR: 0x%x\n", get32(GICC_BPR));
-	printf("Set GICC_APR\n");
+	printf("Set GICC_APRnc\n");
 	for (i = 0; i < 4; i++) {
-		put32(GICC_APR + i * 4, 0);
-		printf("[0x%lx] = 0x%x\n", GICC_APR + i * 4,
-		       get32(GICC_APR + i * 4));
+		put32(GICC_APRnc + i * 4, 0);
+		printf("[0x%lx] = 0x%x\n", GICC_APRnc + i * 4,
+		       get32(GICC_APRnc + i * 4));
 	}
 
 	/* Turn on delivery */
@@ -139,8 +139,8 @@ void gicv2_init()
 	gicv2_cpu_init();
 
 	/* enable the timer's irq */
-	put32(GICD_ISENABLER, GICD_INT_EN_CLR_PPI);
-	printf("GICD_ISENABLER: %x\n", get32(GICD_ISENABLER));
+	put32(GICD_ISENABLERn, GICD_INT_EN_CLR_PPI);
+	printf("GICD_ISENABLERn: %x\n", get32(GICD_ISENABLERn));
 }
 
 void gicv2_handle_irq()
@@ -161,5 +161,5 @@ void gicv2_handle_irq()
 		break;
 	}
 	put32(GICC_EOIR, irqstat);
-	put32(GICC_DIR, irqstat);
+	put32(GICC_DIRc, irqstat);
 }

@@ -76,4 +76,4 @@
 
 void uart_init(void);
 void uart_putc(char ch);
-void uart_send_string(char *str);
+void uart_puts(char *str);
