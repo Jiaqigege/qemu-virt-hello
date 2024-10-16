@@ -69,11 +69,14 @@ static void gicv2_dist_init()
 	 */
 	printf("Deactivate and disable all SPIs\n");
 	for (i = 32; i < nr_lines; i += 32) {
+		// 激活中断，使中断从active状态中清除
 		put32(GICD_ICACTIVERne + i / 8, GICD_INT_EN_CLR_X32);
+		// 禁用中断，使中断不会从GIC转发到CPU
 		put32(GICD_ICENABLERn + i / 8, GICD_INT_EN_CLR_X32);
 	}
 
 	/* Turn on the distributor */
+	// 启用中断转发（中断会根据优先级规则转发到CPU接口）
 	put32(GICD_CTLR, GICD_CTL_ENABLE);
 	printf("GICD enabled, GICD_CTLR: 0x%x\n", get32(GICD_CTLR));
 }
