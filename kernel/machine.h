@@ -2,6 +2,8 @@
 
 #define COUNTER_FREQ_IN_HZ 0x3b9aca0
 
+#define REG32_SIZE 4
+
 #define GIC_BASE (0x8000000)
 
 #define GICD_BASE (GIC_BASE + 0x00000)
