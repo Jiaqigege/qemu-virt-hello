@@ -28,6 +28,8 @@ static void gicv2_dist_init()
 	u32 type, nr_lines, nr_cpus;
 	int i;
 
+	green_println("Start initialize gicv2 distribution interface.");
+
 	/* Disable the distributor */
 	put32(GICD_CTLR, GICD_CTL_DISABLE);
 	printf("GICD_IGROUPRn(Interrupt Group Registers): %x\n",
@@ -94,6 +96,8 @@ static void gicv2_dist_init()
 	// 启用中断转发（中断会根据优先级规则转发到CPU接口）
 	put32(GICD_CTLR, GICD_CTL_ENABLE);
 	printf("GICD enabled, GICD_CTLR: 0x%x\n", get32(GICD_CTLR));
+	green_println("Complete initialize gicv2 distribution interface.");
+	printf(NEWLINE);
 }
 
 static void gicv2_cpu_init()
@@ -101,40 +105,48 @@ static void gicv2_cpu_init()
 	int i;
 	u32 bypass;
 
+	green_println("Start initialize gicv2 cpu interface.");
 	/*
 	 * Deal with the banked PPI and SGI interrupts - disable all
 	 * private interrupts. Make sure everything is deactivated.
 	 */
 	printf("Deactivate and disable all PPIs\n");
 	for (i = 0; i < 32; i += 32) {
-		put32(GICD_ICACTIVERne + i / 8, GICD_INT_EN_CLR_X32);
-		put32(GICD_ICENABLERn + i / 8, GICD_INT_EN_CLR_X32);
+		put32(GICD_ICACTIVERne + REG32_SIZE * i / 32,
+		      GICD_INT_EN_CLR_X32);
+		put32(GICD_ICENABLERn + REG32_SIZE * i / 32,
+		      GICD_INT_EN_CLR_X32);
 	}
 
 	/* Set priority on PPI and SGI interrupts */
-	printf("Set GICD_IPRIORITYRn\n");
+	printf("Set GICD_IPRIORITYRn(Interrupt Priority Registers)\n");
 	for (i = 0; i < 32; i += 4) {
-		put32(GICD_IPRIORITYRn + i * 4 / 4, GICD_INT_DEF_PRI_X4);
-		printf("[0x%lx] = 0x%x\n", GICD_IPRIORITYRn + i * 4 / 4,
-		       get32(GICD_IPRIORITYRn + i * 4 / 4));
+		put32(GICD_IPRIORITYRn + REG32_SIZE * i / 4,
+		      GICD_INT_DEF_PRI_X4);
+		// printf("[0x%lx] = 0x%x\n", GICD_IPRIORITYRn + i * 4 / 4,
+		//        get32(GICD_IPRIORITYRn + REG32_SIZE * i / 4));
 	}
 
 	/* Ensure all SGI interrupts are now enabled */
 	printf("Enable all SGI\n");
+	// 写1使能转发， [15：0] SGI
 	put32(GICD_ISENABLERn, GICD_INT_EN_SET_SGI);
-	printf("GICD_ISENABLERn: 0x%x\n", get32(GICD_ISENABLERn));
+	printf("GICD_ISENABLERn(Interrupt Set-Enable Registers): 0x%x\n",
+	       get32(GICD_ISENABLERn));
 
 	/* Don't mask by priority */
 	put32(GICC_PMR, GICC_INT_PRI_THRESHOLD);
-	printf("GICC_PMR: 0x%x\n", get32(GICC_PMR));
+	printf("GICC_PMR(Interrupt Priority Mask Register): 0x%x\n",
+	       get32(GICC_PMR));
+
 	/* Finest granularity of priority */
-	put32(GICC_BPR, 0);
-	printf("GICC_BPR: 0x%x\n", get32(GICC_BPR));
-	printf("Set GICC_APRnc\n");
+	put32(GICC_BPR, 0); // 16 level priority
+	printf("GICC_BPR(Binary Point Register): 0x%x\n", get32(GICC_BPR));
+	printf("Set GICC_APRnc(Active Priorities Registers)\n");
 	for (i = 0; i < 4; i++) {
-		put32(GICC_APRnc + i * 4, 0);
-		printf("[0x%lx] = 0x%x\n", GICC_APRnc + i * 4,
-		       get32(GICC_APRnc + i * 4));
+		put32(GICC_APRnc + i * REG32_SIZE, 0);
+		// printf("[0x%lx] = 0x%x\n", GICC_APRnc + i * REG32_SIZE,
+		//        get32(GICC_APRnc + i * REG32_SIZE));
 	}
 
 	/* Turn on delivery */
@@ -142,11 +154,15 @@ static void gicv2_cpu_init()
 	bypass &= GICC_DIS_BYPASS_MASK;
 	put32(GICC_CTLR, bypass | GICC_CTRL_EOImodeNS | GICC_ENABLE);
 	printf("GICC enabled, GICC_CTLR: 0x%x\n", get32(GICC_CTLR));
+	green_println("Complete initialize gicv2 cpu interface.");
+	printf(NEWLINE);
 }
 
 void gicv2_init()
 {
 	u32 cpuid = 0; // only core 0 is used
+
+	yellow_println("Start initialize gicv2.");
 
 	if (cpuid == 0)
 		gicv2_dist_init();
@@ -155,8 +171,12 @@ void gicv2_init()
 	gicv2_cpu_init();
 
 	/* enable the timer's irq */
+	// enable ppi
 	put32(GICD_ISENABLERn, GICD_INT_EN_CLR_PPI);
-	printf("GICD_ISENABLERn: %x\n", get32(GICD_ISENABLERn));
+	printf("GICD_ISENABLERn(Interrupt Set-Enable Registers): %x\n",
+	       get32(GICD_ISENABLERn));
+
+	yellow_println("Complete initialize gicv2.");
 }
 
 void gicv2_handle_irq()
@@ -167,7 +187,7 @@ void gicv2_handle_irq()
 	irqstat = get32(GICC_IAR);
 	irqnr = irqstat & 0x3ff;
 
-	printf("irq %d\n", irqnr);
+	printf("------irq %d\n", irqnr);
 	switch (irqnr) {
 	case GIC_INTID_EL1_PHYS_TIMER:
 	case GIC_INTID_VIRT_TIMER:

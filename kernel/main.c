@@ -14,7 +14,6 @@ void main()
 	printf("Booting...\n");
 
 	interrupt_init();
-	printf("Interrupt inited\n");
 
 	timer_init();
 	printf("Timer inited\n");
